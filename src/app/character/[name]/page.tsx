@@ -4,12 +4,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { Character } from "../../Character";
+import Tooltip from "../../../components/Tooltip";
+import { getSpellInfo as fetchSpellInfo } from "../../../utils/api";
 
 export default function CharacterPage() {
   const router = useRouter();
   const params = useParams();
   const characterName = decodeURIComponent(params.name as string);
   const [character, setCharacter] = useState<Character | null>(null);
+  const [spellInfo, setSpellInfo] = useState<{ [key: string]: { name: string; desc: string } | null }>({});
 
   useEffect(() => {
     const storedCharacters = JSON.parse(localStorage.getItem("characters") || "[]");
@@ -17,9 +20,33 @@ export default function CharacterPage() {
     setCharacter(foundCharacter || null);
   }, [characterName]);
 
+  useEffect(() => {
+    const fetchAllSpellInfo = async () => {
+      if (character) {
+        const spells = character.spellcasting.spellsKnown;
+        const spellInfoPromises = spells.map(async (spell) => {
+          const info = await fetchSpellInfo(spell);
+          return { spell, info };
+        });
+        const spellInfoResults = await Promise.all(spellInfoPromises);
+        const newSpellInfo = spellInfoResults.reduce((acc, { spell, info }) => {
+          acc[spell] = info;
+          return acc;
+        }, {} as { [key: string]: { name: string; desc: string } | null });
+        setSpellInfo(newSpellInfo);
+      }
+    };
+
+    fetchAllSpellInfo();
+  }, [character]);
+
   if (!character) {
     return <div className="p-4">Character not found.</div>;
   }
+
+  const handleSpellClick = (spellName: string) => {
+    router.push(`/spell/${encodeURIComponent(spellName)}`);
+  };
 
   return (
     <div className="p-8">
@@ -58,7 +85,12 @@ export default function CharacterPage() {
       <p>Spellcasting Class: {character.spellcasting.class}</p>
       <p>Spell Save DC: {character.spellcasting.spellSaveDC}</p>
       <p>Spell Attack Bonus: {character.spellcasting.spellAttackBonus}</p>
-      <p>Spells Known: {character.spellcasting.spellsKnown.join(", ")}</p>
+      <p>Spells Known:</p>
+      {character.spellcasting.spellsKnown.map(spell => (
+        <Tooltip key={spell} content={spellInfo[spell]?.desc || "Loading..."}>
+          <p className="inline-block mr-2 cursor-pointer" onClick={() => handleSpellClick(spell)}>{spell}</p>
+        </Tooltip>
+      ))}
       {character.spellcasting.spellSlots.map(slot => (
         <p key={slot.level}>Spell Slots (Level {slot.level}): {slot.used} / {slot.total}</p>
       ))}
