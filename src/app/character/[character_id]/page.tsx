@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
-import { Character } from "../../interfaces/Character";
-import { supabase } from "@/lib/supabaseClient";
+import { useRouter, useParams } from "next/navigation";
+import { Character } from "../../../types/Character";
+import { getCharacterById } from "@/services/characterService";
 
 export default function CharacterPage() {
   const router = useRouter();
@@ -14,30 +13,11 @@ export default function CharacterPage() {
 
   useEffect(() => {
     const fetchCharacter = async () => {
-      console.log("Fetching character from Supabase...");
-      const { data, error } = await supabase
-        .from("characters")
-        .select(`
-          character_id, created_at, player_name, name, level, xp,
-          races (name), 
-          subraces (name),
-          classes (name),
-          subclasses (name),
-          backgrounds (name),
-          alignments (name, acronym),
-          strength, dexterity, constitution, intelligence, wisdom, charisma,
-          proficiency_bonus, armor_class, speed, hp_max, hp_current, hp_temp,
-          inspiration, prepared_spells_max, prepared_spells_current,
-          appearance, backstory, personality, ideals, bonds
-        `)
-        .eq("character_id", characterId)
-        .single();
-
-      if (error) {
-        console.error("Error fetching character:", error.message, error.details, error.hint);
-      } else {
-        console.log("Fetched character:", data);
+      try {
+        const data = await getCharacterById(characterId);
         setCharacter(data);
+      } catch (error) {
+        console.error(error);
       }
     };
 
