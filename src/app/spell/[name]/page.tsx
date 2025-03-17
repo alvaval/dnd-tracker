@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { getSpellInfo as fetchSpellInfo } from "../../../utils/api";
+import { getSpellInfo as fetchSpellInfo } from "@/utils/api";
 
 export default function SpellPage() {
   const router = useRouter();
