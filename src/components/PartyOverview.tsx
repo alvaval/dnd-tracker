@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Character } from "@/types/Character";
-import { getAllCharacters, updateCharacterHP } from "@/services/characterService";
+import { getAllCharacters } from "@/services/characterService";
 
 export default function PartyOverview() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -21,19 +21,6 @@ export default function PartyOverview() {
 
     fetchCharacters();
   }, []);
-
-  async function handleHPChange(characterId: string, amount: number) {
-    try {
-      const updatedCharacter = await updateCharacterHP(characterId, amount);
-      if (!updatedCharacter) return;
-
-      setCharacters((prev) =>
-        prev.map((char) => (char.character_id === characterId ? updatedCharacter : char))
-      );
-    } catch (error) {
-      console.error("Error updating HP:", error);
-    }
-  }
 
   return (
     <div className="flex flex-col items-center p-8">
@@ -53,13 +40,11 @@ export default function PartyOverview() {
 
             <div className="flex gap-2 mt-2">
               <button 
-                onClick={() => handleHPChange(char.character_id, -1)}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
               >
                 - HP
               </button>
               <button 
-                onClick={() => handleHPChange(char.character_id, 1)}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
               >
                 + HP
