@@ -29,3 +29,31 @@ export const getSpellInfo = async (spellName: string) => {
     return { name: spellName, desc: ["Failed to fetch spell information"] }; // Ensures UI still renders
   }
 };
+
+export async function getRaceInfo(raceName: string) {
+  try {
+    const response = await fetch(`https://www.dnd5eapi.co/api/races/${raceName}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch race information for ${raceName}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function getTraitInfo(traitIndex: string) {
+  try {
+    const response = await fetch(`https://www.dnd5eapi.co/api/traits/${traitIndex}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch trait information for ${traitIndex}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

@@ -9,7 +9,7 @@ interface CharacterCardProps {
   onBack: () => void;
 }
 
-export default function CharacterCard({ character, onBack }: CharacterCardProps) {
+const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
   const router = useRouter();
   const [spellInfo, setSpellInfo] = useState<{ [key: string]: { name: string; desc: string } | null }>({});
 
@@ -33,6 +33,10 @@ export default function CharacterCard({ character, onBack }: CharacterCardProps)
     fetchAllSpellInfo();
   }, [character]);
 
+  const handleRaceClick = () => {
+    router.push(`/race/${encodeURIComponent(character.race.index)}`);
+  };
+
   return (
     <div className="p-8 bg-gray-800 text-white rounded-lg shadow-md">
       <button onClick={onBack} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 mb-4 transition">
@@ -41,7 +45,7 @@ export default function CharacterCard({ character, onBack }: CharacterCardProps)
       <h1 className="text-4xl font-bold mb-4">{character.name}</h1>
 
       <div className="text-gray-400">
-        <p>Race: {character.race.name}</p>
+        <p>Race: <span onClick={handleRaceClick} className="text-blue-500 cursor-pointer hover:underline">{character.race.name}</span></p>
         <p>Class: {character.class.name} ({character.subclass.name})</p>
         <p>Level: {character.level}</p>
         <p>XP: {character.xp}</p>
@@ -74,4 +78,6 @@ export default function CharacterCard({ character, onBack }: CharacterCardProps)
       ))}
     </div>
   );
-}
+};
+
+export default CharacterCard;
