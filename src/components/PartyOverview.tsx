@@ -32,11 +32,11 @@ export default function PartyOverview() {
               className="text-xl font-semibold cursor-pointer hover:underline hover:text-yellow-400"
               onClick={() => router.push(`/character/${char.character_id}`)}
             >
-              {char.name} (Lvl {char.level} {char.classes?.name})
+              {char.name} (Lvl {char.level} {char.class.name})
             </h2>
-            <p className="text-sm text-gray-400">Race: {char.races?.name} {char.subraces?.name ? `(Subrace: ${char.subraces.name})` : ""}</p>
-            <p className="text-sm text-gray-400">Background: {char.backgrounds?.name}</p>
-            <p className="text-sm text-gray-400">HP: {char.hp_current} / {char.hp_max}</p>
+            <p className="text-sm text-gray-400">Race: {char.race.name} {char.subrace?.name ? `(Subrace: ${char.subrace.name})` : ""}</p>
+            <p className="text-sm text-gray-400">Background: {char.background.name}</p>
+            <p className="text-sm text-gray-400">HP: {char.hp.current} / {char.hp.max}</p>
 
             <div className="flex gap-2 mt-2">
               <button 

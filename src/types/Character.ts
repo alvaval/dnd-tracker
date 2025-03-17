@@ -13,34 +13,34 @@ export class Character {
   background!: { index: string; name: string };
   alignment?: { index: string; name: string; acronym: string };
 
-  ability!: {
-    strength: { name: string; score: number; modifier: number; saving_throw_proficiency: boolean };
-    dexterity: { name: string; score: number; modifier: number; saving_throw_proficiency: boolean };
-    constitution: { name: string; score: number; modifier: number; saving_throw_proficiency: boolean };
-    intelligence: { name: string; score: number; modifier: number; saving_throw_proficiency: boolean };
-    wisdom: { name: string; score: number; modifier: number; saving_throw_proficiency: boolean };
-    charisma: { name: string; score: number; modifier: number; saving_throw_proficiency: boolean };
+  abilityScores!: {
+    strength: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
+    dexterity: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
+    constitution: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
+    intelligence: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
+    wisdom: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
+    charisma: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
   };
 
-  skill!: {
-    acrobatics: { name: string; score: number; modifier: number; proficiency: boolean };
-    animal_handling: { name: string; score: number; modifier: number; proficiency: boolean };
-    arcana: { name: string; score: number; modifier: number; proficiency: boolean };
-    athletics: { name: string; score: number; modifier: number; proficiency: boolean };
-    deception: { name: string; score: number; modifier: number; proficiency: boolean };
-    history: { name: string; score: number; modifier: number; proficiency: boolean };
-    insight: { name: string; score: number; modifier: number; proficiency: boolean };
-    intimidation: { name: string; score: number; modifier: number; proficiency: boolean };
-    investigation: { name: string; score: number; modifier: number; proficiency: boolean };
-    medicine: { name: string; score: number; modifier: number; proficiency: boolean };
-    nature: { name: string; score: number; modifier: number; proficiency: boolean };
-    perception: { name: string; score: number; modifier: number; proficiency: boolean };
-    performance: { name: string; score: number; modifier: number; proficiency: boolean };
-    persuasion: { name: string; score: number; modifier: number; proficiency: boolean };
-    religion: { name: string; score: number; modifier: number; proficiency: boolean };
-    sleight_of_hand: { name: string; score: number; modifier: number; proficiency: boolean };
-    stealth: { name: string; score: number; modifier: number; proficiency: boolean };  
-    survival: { name: string; score: number; modifier: number; proficiency: boolean }
+  skills!: {
+    acrobatics: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    animal_handling: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    arcana: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    athletics: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    deception: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    history: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    insight: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    intimidation: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    investigation: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    medicine: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    nature: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    perception: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    performance: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    persuasion: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    religion: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    sleight_of_hand: { name: string; baseModifier: number; modifier: number; proficiency: boolean };
+    stealth: { name: string; baseModifier: number; modifier: number; proficiency: boolean };  
+    survival: { name: string; baseModifier: number; modifier: number; proficiency: boolean }
   };
 
   proficiency_bonus: number = 2;
@@ -61,7 +61,7 @@ export class Character {
     spellSaveDC: number;
     spellAttackBonus: number;
     spellsKnown: string[];
-    spellSlots: { level: number; total: number; used: number }[];
+    spellSlots: { level: number; used: number; total: number }[];
     preparedSpells: {
       spells: string[];
       max: number;
@@ -77,14 +77,6 @@ export class Character {
 
   constructor(data: Partial<Character>) {
     Object.assign(this, data);
-    this.ability = {
-      strength: { name: "Strength", score: data.abilities?.strength?.value || 10, modifier: Math.floor((data.abilities?.strength?.value || 10 - 10) / 2) },
-      dexterity: { name: "Dexterity", score: data.abilities?.dexterity?.value || 10, modifier: Math.floor((data.abilities?.dexterity?.value || 10 - 10) / 2) },
-      constitution: { name: "Constitution", score: data.abilities?.constitution?.value || 10, modifier: Math.floor((data.abilities?.constitution?.value || 10 - 10) / 2) },
-      intelligence: { name: "Intelligence", score: data.abilities?.intelligence?.value || 10, modifier: Math.floor((data.abilities?.intelligence?.value || 10 - 10) / 2) },
-      wisdom: { name: "Wisdom", score: data.abilities?.wisdom?.value || 10, modifier: Math.floor((data.abilities?.wisdom?.value || 10 - 10) / 2) },
-      charisma: { name: "Charisma", score: data.abilities?.charisma?.value || 10, modifier: Math.floor((data.abilities?.charisma?.value || 10 - 10) / 2) }
-    };
   }
 
   levelUp(): void {
