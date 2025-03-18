@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { getRaceInfo as fetchRaceInfo, getTraitInfo as fetchTraitInfo } from "@/utils/api";
+import { getRaceInfo as fetchRaceInfo, getTraitInfo as fetchTraitInfo, getSubraces, getSubraceInfo } from "@/utils/api";
 import Tooltip from "@/components/Tooltip";
 
 export default function RacePage() {
@@ -20,6 +20,7 @@ export default function RacePage() {
     size_description?: string;
     languages?: { name: string }[];
     traits?: { index: string, name: string }[];
+    subraces?: { index: string, name: string }[];
   }
 
   interface TraitInfo {
@@ -27,7 +28,18 @@ export default function RacePage() {
     desc: string[];
   }
 
+  interface SubraceInfo {
+    index: string;
+    name: string;
+    desc: string;
+    ability_bonuses?: { ability_score: { name: string }, bonus: number }[];
+    starting_proficiencies?: { name: string }[];
+    languages?: { name: string }[];
+    racial_traits?: { name: string }[];
+  }
+
   const [raceInfo, setRaceInfo] = useState<RaceInfo | null>(null);
+  const [subraces, setSubraces] = useState<SubraceInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [traitInfo, setTraitInfo] = useState<{ [key: string]: TraitInfo | null }>({});
 
@@ -44,7 +56,18 @@ export default function RacePage() {
       }
     };
 
+    const fetchSubraces = async () => {
+      const subraceList = await getSubraces(raceName);
+      const subraceInfoPromises = subraceList.map(async (subrace) => {
+        const info = await getSubraceInfo(subrace.index);
+        return info;
+      });
+      const subraceInfoResults = await Promise.all(subraceInfoPromises);
+      setSubraces(subraceInfoResults);
+    };
+
     fetchRace();
+    fetchSubraces();
   }, [raceName]);
 
   const handleTraitHover = async (traitIndex: string) => {
@@ -108,6 +131,29 @@ export default function RacePage() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {subraces.length > 0 && (
+        <div>
+          <strong>Subraces:</strong>
+          {subraces.map((subrace) => (
+            <div key={subrace.index} className="mt-4">
+              <h2 className="text-2xl font-semibold">{subrace.name}</h2>
+              <p>{subrace.desc}</p>
+              {subrace.ability_bonuses && subrace.ability_bonuses.length > 0 && (
+                <p><strong>Ability Bonuses:</strong> {subrace.ability_bonuses.map(bonus => `${bonus.ability_score?.name || "Unknown"} +${bonus.bonus}`).join(", ")}</p>
+              )}
+              {subrace.starting_proficiencies && subrace.starting_proficiencies.length > 0 && (
+                <p><strong>Starting Proficiencies:</strong> {subrace.starting_proficiencies.map(proficiency => proficiency.name).join(", ")}</p>
+              )}
+              {subrace.languages && subrace.languages.length > 0 && (
+                <p><strong>Languages:</strong> {subrace.languages.map(language => language.name).join(", ")}</p>
+              )}
+              {subrace.racial_traits && subrace.racial_traits.length > 0 && (
+                <p><strong>Racial Traits:</strong> {subrace.racial_traits.map(trait => trait.name).join(", ")}</p>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
