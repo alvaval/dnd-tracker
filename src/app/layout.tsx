@@ -23,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <li><Link href="/combat" className="text-white hover:text-yellow-400">Combat</Link></li>
             <li><Link href="/characters" className="text-white hover:text-yellow-400">Characters</Link></li>
             <li><Link href="/wiki" className="text-white hover:text-yellow-400">Wiki</Link></li>
+            <li><Link href="/avatar" className="text-white hover:text-yellow-400">Character Customization</Link></li>
           </ul>
         </nav>
 
