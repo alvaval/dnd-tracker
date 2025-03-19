@@ -2,9 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "../styles/globals.css";
+import { Inknut_Antiqua, Modern_Antiqua} from "next/font/google";
 
 const geistSans = Geist({ variable: "--font-geist-sans" });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono" });
+const inknutAntiqua = Inknut_Antiqua({
+  subsets: ["latin"],
+  weight: ["400"], // Adjust weight as needed
+});
+const modernAntiqua = Modern_Antiqua({
+  subsets: ["latin"],
+  weight: ["400"], // Adjust weight as needed
+});
 
 export const metadata: Metadata = {
   title: "D&D Campaign Tracker",
@@ -14,16 +23,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-[#F9F7F1]`}>
         
         {/* Fixed Navbar */}
-        <nav className="fixed top-0 left-0 w-full bg-gray-800 py-4 shadow-md z-50">
-          <ul className="flex justify-center space-x-6">
-            <li><Link href="/" className="text-white hover:text-yellow-400">Party Overview</Link></li>
-            <li><Link href="/combat" className="text-white hover:text-yellow-400">Combat</Link></li>
-            <li><Link href="/characters" className="text-white hover:text-yellow-400">Characters</Link></li>
-            <li><Link href="/wiki" className="text-white hover:text-yellow-400">Wiki</Link></li>
-            <li><Link href="/avatar" className="text-white hover:text-yellow-400">Character Customization</Link></li>
+        <nav className={`${inknutAntiqua.className} fixed top-0 left-0 w-full h-[100px] py-4 z-50 flex justify-between px-10`}>
+          <div className="flex">
+          <span><img src="/sprites/mole.png"></img></span>
+          <span className="text-[30px] pt-5">D<span className={`${modernAntiqua.className} text-[25px]`}>&</span>D Campaign Tracker</span>
+          </div>
+          <ul className="flex justify-center space-x-6 pt-7 text-[16px]">
+            <li><Link href="/" className="hover:underline">Party Overview</Link></li>
+            <li><Link href="/combat" className="hover:underline">Combat</Link></li>
+            <li><Link href="/characters" className="hover:underline">Characters</Link></li>
+            <li><Link href="/wiki" className="hover:underline">Wiki</Link></li>
+            <li><Link href="/avatar" className="hover:underline">Character Customization</Link></li>
           </ul>
         </nav>
 
