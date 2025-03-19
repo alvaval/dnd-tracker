@@ -34,10 +34,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="bg-[#F9F7F1]">
         
         {/* Fixed Navbar */}
-        <nav className="fixed top-0 left-0 w-full h-[100px] py-4 z-50 flex justify-between px-10">
+        <nav className={`${inknutAntiqua.className} fixed top-0 left-0 w-full h-[100px] py-4 z-50 flex justify-between px-10`}>
           <div className="flex">
             <span><img src="/sprites/mole.png" alt="Mole Logo" /></span>
-            <span className="text-[30px] pt-5">D<span className="text-[25px]">&</span>D Campaign Tracker</span>
+            <span className="text-[30px] pt-5">D<span className={`${modernAntiqua.className}`}>&</span>D Campaign Tracker</span>
           </div>
           
           <ul className="flex justify-center space-x-6 pt-7 text-[16px]">
