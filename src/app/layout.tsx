@@ -1,22 +1,10 @@
 "use client";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { geistSans, geistMono, inknutAntiqua, modernAntiqua } from "@/lib/fonts";
 import Link from "next/link";
 import "../styles/globals.css";
-import { Inknut_Antiqua, Modern_Antiqua} from "next/font/google";
 import { usePathname } from "next/navigation";
 
-
-const geistSans = Geist({ variable: "--font-geist-sans" });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono" });
-const inknutAntiqua = Inknut_Antiqua({
-  subsets: ["latin"],
-  weight: ["400"], // Adjust weight as needed
-});
-const modernAntiqua = Modern_Antiqua({
-  subsets: ["latin"],
-  weight: ["400"], // Adjust weight as needed
-});
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname(); // Get current route
@@ -37,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <nav className={`${inknutAntiqua.className} fixed top-0 left-0 w-full h-[100px] py-4 z-50 flex justify-between px-10`}>
           <div className="flex">
             <span><img src="/sprites/mole.png" alt="Mole Logo" /></span>
-            <span className="text-[30px] pt-5">D<span className={`${modernAntiqua.className}`}>&</span>D Campaign Tracker</span>
+            <span className="text-[30px] pt-5">D<span className={`${modernAntiqua.className} text-[25px]`}>&</span>D Campaign Tracker</span>
           </div>
           
           <ul className="flex justify-center space-x-6 pt-7 text-[16px]">
