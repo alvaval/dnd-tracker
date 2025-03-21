@@ -41,6 +41,10 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
     router.push(`/class/${encodeURIComponent(character.class.index)}`);
   };
 
+  const handleBackgroundClick = () => {
+    router.push(`/background/${encodeURIComponent(character.background.index)}`);
+  };
+
   return (
     <div className="p-8 bg-gray-800 text-white rounded-lg shadow-md">
       <button onClick={onBack} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 mb-4 transition">
@@ -61,9 +65,14 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
             {character.class.name} {character.subclass && `(${character.subclass.name})`}
           </span>
         </p>
+        <p>
+          Background:{" "}
+          <span onClick={handleBackgroundClick} className="text-blue-500 cursor-pointer hover:underline">
+            {character.background.name}
+          </span>
+        </p>
         <p>Level: {character.level}</p>
         <p>XP: {character.xp}</p>
-        <p>Background: {character.background.name}</p>
         <p>Alignment: {character.alignment.name}</p>
         <p>Player: {character.playerName}</p>
       </div>
