@@ -1,6 +1,5 @@
 export const getSpellInfo = async (spellName: string) => {
-  console.log(`Fetching information for spell: ${spellName}`); // Debugging log
-
+  
   const myHeaders = new Headers();
   myHeaders.append("Accept", "application/json");
 
@@ -12,7 +11,6 @@ export const getSpellInfo = async (spellName: string) => {
 
   try {
     const formattedSpellName = spellName.toLowerCase().replace(/ /g, '-');
-    console.log(`Formatted spell name: ${formattedSpellName}`); // Debugging log
 
     const response = await fetch(`https://www.dnd5eapi.co/api/spells/${formattedSpellName}`, requestOptions);
     
@@ -22,7 +20,6 @@ export const getSpellInfo = async (spellName: string) => {
     }
 
     const result = await response.json();
-    console.log(`Fetched information for spell: ${spellName}`, result); // Debugging log
     return result;
   } catch (error) {
     console.error(`Error fetching spell information for ${spellName}:`, error);
@@ -115,7 +112,6 @@ export async function getSubclasses(classIndex: string) {
       throw new Error(`Failed to fetch subclasses for class ${classIndex}`);
     }
     const data = await response.json();
-    console.log(`Fetched subclasses data:`, data); // Debugging log
     return data.results || []; // Ensure this matches the API response structure
   } catch (error) {
     console.error(error);
@@ -130,8 +126,32 @@ export async function getSubclassInfo(subclassIndex: string) {
       throw new Error(`Failed to fetch subclass information for ${subclassIndex}`);
     }
     const data = await response.json();
-    console.log(`Fetched subclass information for ${subclassIndex}:`, data); // Debugging log
     return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+import { Background } from "@/types/Background";
+
+const backgroundCache: { [key: string]: Background } = {};
+
+export async function getBackgroundInfo(backgroundName: string): Promise<Background | null> {
+  if (backgroundCache[backgroundName]) {
+    return backgroundCache[backgroundName];
+  }
+
+  try {
+    const response = await fetch(`https://www.dnd5eapi.co/api/backgrounds/${backgroundName}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch background information for ${backgroundName}`);
+    }
+    const data = await response.json();
+    
+    const background = new Background(data);
+    backgroundCache[backgroundName] = background;
+    return background;
   } catch (error) {
     console.error(error);
     return null;
