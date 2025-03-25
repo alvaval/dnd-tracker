@@ -36,13 +36,13 @@ const AvatarCanvas: React.FC<AvatarCanvasProps> = ({
     characterImg.src = characterSheet;
 
     backgroundImg.onload = () => {
-      // ✅ Adjust canvas size for scaling
+      // Adjust canvas size for scaling
       canvas.width = backgroundSize.width * SCALE;
       canvas.height = backgroundSize.height * SCALE;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.imageSmoothingEnabled = false; // Prevent blurring of pixel art
 
-      // ✅ Draw scaled background
+      // Draw scaled background
       ctx.drawImage(
         backgroundImg,
         backgroundCoords.x,
@@ -57,7 +57,7 @@ const AvatarCanvas: React.FC<AvatarCanvasProps> = ({
 
       characterImg.onload = () => {
         layers.forEach(({ x, y, width, height }) => {
-          // ✅ Draw character centered with scaling
+          // Draw character centered with scaling
           const characterX = ((backgroundSize.width - characterSize.width) / 2) * SCALE;
           const characterY = ((backgroundSize.height - characterSize.height) / 2) * SCALE;
 
