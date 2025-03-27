@@ -3,9 +3,9 @@ import { supabase } from "@/lib/supabaseClient";
 import { transformSupabaseCharacter } from "@/utils/characterTransformer";
 
 const CHARACTER_DATA = `
-          character_id, created_at, player_name, name, level, xp,
-          spell_save_dc, spell_attack_bonus, hit_dice, passive_perception,
-          proficiency_bonus, armor_class, speed, hp_max, hp_current, hp_temp,
+          character_id, player_name, name, level, xp,
+          armor_class, spell_save_dc, spell_attack_bonus, hit_dice, passive_perception,
+          proficiency_bonus, speed, hp_max, hp_current, hp_temp,
           inspiration, prepared_spells_max,
           appearance, backstory, personality, ideals, bonds,
           races!inner (index, name), 

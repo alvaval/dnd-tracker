@@ -96,7 +96,6 @@ export function transformSupabaseCharacter(char: any): Character {
     
     return new Character({
         character_id: char.character_id,
-        created_at: char.created_at,
         player_name: char.player_name,
         name: char.name,
         level: char.level,
