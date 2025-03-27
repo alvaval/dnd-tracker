@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { supabase } from '@/lib/supabaseClient';
 import { transformSupabaseCharacter, transformCharacterToSupabase } from '@/utils/characterTransformer';
 import { Character } from '@/types/Character';
+import { CHARACTER_DATA } from '@/utils/dataHelpers';
 
 // Zustand store to manage global character state
 const useCharacterStore = create((set) => ({
@@ -35,8 +36,6 @@ supabase
         state.setCharacters(state.characters.filter((char) => char.character_id !== deletedCharId));
     })
     .subscribe();
-
-import { CHARACTER_DATA } from '@/utils/data_helpers';
 
 // Helper to manage caching in localStorage
 function cacheCharacters(characters) {
@@ -74,9 +73,14 @@ export async function getAllCharacters(forceRefresh = false) {
         throw new Error('Error fetching characters: ' + error.message);
     }
 
+    console.log("CHARACTERS PRE TRANSFORM", data);
+
     const characters = data.map(transformSupabaseCharacter);
     cacheCharacters(characters);
     useCharacterStore.getState().setCharacters(characters);
+
+
+    console.log("CHARACTERS", characters);
     return characters;
 }
 
@@ -116,17 +120,18 @@ export async function getCharacterById(id) {
 }
 
 const exampleCharacter = new Character({
-    character_id: "001",
-    created_at: new Date().toISOString(),
+    //character_id: "10",
     player_name: "Alva",
     name: "Thornak the Strong",
-    level: 5,
-    xp: 1200,
+    //level: 5,
+    //xp: 1200,
   
     race: { index: "human", name: "Human" },
-    class: { index: "barbarian", name: "Barbarian" },
-    background: { index: "soldier", name: "Soldier" },
-    alignment: { index: "lg", name: "Lawful Good", acronym: "LG" },
+    class: { index: "druid", name: "Druid" },
+    subrace: { index: "wood-elf", name: "Wood Elf" },
+    subclass: { index: "beserker", name: "Beserker" },
+    background: { index: "acolyte", name: "Acolyte" },
+    alignment: { index: "lawful-good", name: "Lawful Good", acronym: "LG" },
   
     abilityScores: {
       strength: { name: "Strength", score: 18, baseModifier: 4, modifier: 6, saving_throw_proficiency: true },
@@ -157,7 +162,16 @@ const exampleCharacter = new Character({
       stealth: { name: "Stealth", baseModifier: 2, modifier: 2, proficiency: false },
       survival: { name: "Survival", baseModifier: 3, modifier: 3, proficiency: true },
     },
-  
+
+    spellcasting: {
+        class: { index: "druid", name: "Druid" },
+        ability: { index: "wisdom", name: "Wisdom" },
+        spellSaveDC: 5,
+        spellAttackBonus: 5,
+        spellsKnown: ["fairie-fire", "vicious-mockery"],
+        spellSlots: [{ level: 1, total: 4, used: 2 }, { level: 2, total: 3, used: 1 }],
+        preparedSpells: {spells: ["fairie-fire", "vicious-mockery"], max: 5, current: 2}
+    },
     proficiency_bonus: 3,
     armor_class: 15,
     speed: 30,
@@ -168,7 +182,7 @@ const exampleCharacter = new Character({
       temp: 0,
     },
   
-    inspiration: 1,
+    //inspiration: 1,
   
     appearance: "A towering, muscular warrior with wild black hair and piercing green eyes.",
     backstory: "Thornak grew up in a brutal, unforgiving tribe. He honed his strength to protect his kin and earned his title through sheer force and indomitable spirit.",
@@ -179,16 +193,40 @@ const exampleCharacter = new Character({
   
   console.log(exampleCharacter);  
 
-export async function addTestCharacter() {
-    const newCharacter = transformCharacterToSupabase(exampleCharacter);
-    const { data, error } = await supabase
-        .from('characters')
-        .insert([newCharacter]);
+  export async function addTestCharacter() {
+    const { characterData, characterAbilities } = transformCharacterToSupabase(exampleCharacter);
 
-    if (error) {
-        console.error('Error adding character:', error.message);
+    // Insert the main character data
+    const { data: characterDataResponse, error: characterError } = await supabase
+        .from('characters')
+        .insert([characterData])
+        .select();  // Use .select() to return the inserted record(s)
+
+    if (characterError) {
+        console.error('Error adding character:', characterError.message);
+        return;
+    }
+
+    // Get the generated character ID from the response
+    const generatedCharacter = characterDataResponse[0];
+    const character_id = generatedCharacter.character_id;
+    console.log('Character added successfully with ID:', character_id);
+
+    // Update abilities with the generated character ID
+    const abilitiesWithId = characterAbilities.map((ability) => ({
+        ...ability,
+        character_id: character_id,
+    }));
+
+    // Insert character abilities
+    const { data: abilitiesDataResponse, error: abilitiesError } = await supabase
+        .from('character_abilities')
+        .insert(abilitiesWithId);
+
+    if (abilitiesError) {
+        console.error('Error adding character abilities:', abilitiesError.message);
     } else {
-        console.log('Character added successfully:', data);
+        console.log('Character abilities added successfully:', abilitiesDataResponse);
     }
 }
 

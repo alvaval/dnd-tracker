@@ -1,6 +1,5 @@
 export class Character {
   character_id!: string;
-  created_at!: string;
   player_name!: string;
   name: string = '';
   level: number = 1;
