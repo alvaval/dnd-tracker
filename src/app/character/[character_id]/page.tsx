@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Character } from "../../../types/Character";
-import { getCharactersById } from "@/services/characterService";
+import { getCharacterById } from "@/services/characterService";
 import CharacterCard from "@/components/CharacterCard";
 
 export default function CharacterPage() {
@@ -15,7 +15,7 @@ export default function CharacterPage() {
   useEffect(() => {
     const fetchCharacter = async () => {
       try {
-        const data = await getCharactersById(characterId);
+        const data = await getCharacterById(characterId);
         setCharacter(data);
       } catch (error) {
         console.error(error);

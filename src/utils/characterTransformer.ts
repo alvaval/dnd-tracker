@@ -148,3 +148,64 @@ export function transformSupabaseCharacter(char: any): Character {
         bonds: char.bonds,
     });
 }
+
+
+/**
+ * Transforms a Character object into a format suitable for Supabase insertion.
+ */
+export function transformCharacterToSupabase(char: Character): any {
+    const abilityMappings: Record<string, string> = {
+        strength: 'Strength',
+        dexterity: 'Dexterity',
+        constitution: 'Constitution',
+        intelligence: 'Intelligence',
+        wisdom: 'Wisdom',
+        charisma: 'Charisma',
+    };
+
+    const abilityScores = Object.entries(abilityMappings).map(([key, name]) => {
+        return {
+            index: key,
+            name: name,
+            value: char.abilityScores[key].score,
+            modifier: char.abilityScores[key].modifier,
+        };
+    });
+
+    const race = { index: char.race.index, name: char.race.name };
+    const subrace = char.subrace ? { index: char.subrace.index, name: char.subrace.name } : null;
+    const characterClass = { index: char.class.index, name: char.class.name };
+    const subclass = char.subclass ? { index: char.subclass.index, name: char.subclass.name } : null;
+    const background = { index: char.background.index, name: char.background.name };
+    const alignment = char.alignment ? { index: char.alignment.index, name: char.alignment.name, acronym: char.alignment.acronym } : null;
+
+    const characterData = {
+        character_id: char.character_id,
+        created_at: char.created_at,
+        player_name: char.player_name,
+        name: char.name,
+        level: char.level,
+        xp: char.xp,
+        proficiency_bonus: char.proficiency_bonus,
+        armor_class: char.armor_class,
+        speed: char.speed,
+        hp_max: char.hp.max,
+        hp_current: char.hp.current,
+        hp_temp: char.hp.temp,
+        inspiration: char.inspiration,
+        appearance: char.appearance,
+        backstory: char.backstory,
+        personality: char.personality,
+        ideals: char.ideals,
+        bonds: char.bonds,
+        races: race,
+        subraces: subrace,
+        classes: characterClass,
+        subclasses: subclass,
+        backgrounds: background,
+        alignments: alignment,
+        character_abilities: abilityScores,
+    };
+
+    return characterData;
+}
