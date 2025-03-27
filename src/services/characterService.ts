@@ -1,22 +1,66 @@
+"use client";
+
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabaseClient';
 import { transformSupabaseCharacter, transformCharacterToSupabase } from '@/utils/characterTransformer';
 import { Character } from '@/types/Character';
 import { CHARACTER_DATA } from '@/utils/dataHelpers';
 
-// Zustand store to manage global character state
-const useCharacterStore = create((set) => ({
-    characters: [],
-    setCharacters: (chars) => set({ characters: chars }),
-    updateCharacter: (updatedChar) => set((state) => ({
-        characters: state.characters.map((char) => char.character_id === updatedChar.character_id ? updatedChar : char)
-    })),
-    addCharacter: (newChar) => set((state) => ({
-        characters: [...state.characters, newChar]
-    })),
-}));
 
-// Supabase real-time listener for character updates and inserts
+export async function getAllCharacters(): Promise<Character[]> {
+    console.log("Fetching all characters from Supabase...");
+    const { data, error } = await supabase
+        .from("characters")
+        .select(CHARACTER_DATA);
+
+    if (error) {
+        console.error("Error fetching characters:", error.message);
+        throw new Error("Failed to fetch characters from Supabase.");
+    }
+
+    console.log(data);
+    const formattedData: Character[] = data.map(transformSupabaseCharacter);
+    
+    console.log("Formatted characters:", formattedData);
+    return formattedData;
+}
+export async function getCharacterById(characterIds: string | string[]): Promise<Character | Character[] | null> {
+    console.log(`Fetching character(s) by ID(s): ${characterIds} from Supabase...`);
+
+    // Ensure characterIds is always an array
+    const idsArray = Array.isArray(characterIds) ? characterIds : [characterIds];
+
+    const { data, error } = await supabase
+        .from("characters")
+        .select(CHARACTER_DATA)
+        .in("character_id", idsArray);
+
+    if (error) {
+        console.error("Error fetching character(s) by ID:", error.message);
+        return null;
+    }
+
+    const transformedCharacters = data.map(transformSupabaseCharacter);
+
+    console.log(transformedCharacters)
+
+    // If only one ID was passed, return a single character object
+    return Array.isArray(characterIds) && characterIds.length > 1 ? transformedCharacters : transformedCharacters[0];
+}
+
+// // Zustand store to manage global character state
+// const useCharacterStore = create((set) => ({
+//     characters: [],
+//     setCharacters: (chars) => set({ characters: chars }),
+//     updateCharacter: (updatedChar) => set((state) => ({
+//         characters: state.characters.map((char) => char.character_id === updatedChar.character_id ? updatedChar : char)
+//     })),
+//     addCharacter: (newChar) => set((state) => ({
+//         characters: [...state.characters, newChar]
+//     })),
+// }));
+
+// // Supabase real-time listener for character updates and inserts
 supabase
     .channel('characters')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'characters' }, (payload) => {
@@ -37,87 +81,87 @@ supabase
     })
     .subscribe();
 
-// Helper to manage caching in localStorage
-function cacheCharacters(characters) {
-    console.log('Caching characters to localStorage', characters);
-    localStorage.setItem('characters', JSON.stringify(characters));
-    localStorage.setItem('cacheTimestamp', Date.now().toString());
-}
+// // Helper to manage caching in localStorage
+// function cacheCharacters(characters) {
+//     console.log('Caching characters to localStorage', characters);
+//     localStorage.setItem('characters', JSON.stringify(characters));
+//     localStorage.setItem('cacheTimestamp', Date.now().toString());
+// }
 
-function getCachedCharacters() {
-    const cached = localStorage.getItem('characters');
-    const timestamp = localStorage.getItem('cacheTimestamp');
-    if (cached && timestamp && Date.now() - parseInt(timestamp) < 300000) {
-        console.log('Fetching characters from cache', JSON.parse(cached));
-        return JSON.parse(cached);
-    }
-    return null;
-}
+// function getCachedCharacters() {
+//     const cached = localStorage.getItem('characters');
+//     const timestamp = localStorage.getItem('cacheTimestamp');
+//     if (cached && timestamp && Date.now() - parseInt(timestamp) < 300000) {
+//         console.log('Fetching characters from cache', JSON.parse(cached));
+//         return JSON.parse(cached);
+//     }
+//     return null;
+// }
 
-export async function getAllCharacters(forceRefresh = false) {
-    if (!forceRefresh) {
-        const cachedCharacters = getCachedCharacters();
-        if (cachedCharacters) {
-            console.log('Using cached character data.');
-            useCharacterStore.getState().setCharacters(cachedCharacters);
-            return cachedCharacters;
-        }
-    }
+// export async function getAllCharacters(forceRefresh = false) {
+//     if (!forceRefresh) {
+//         const cachedCharacters = getCachedCharacters();
+//         if (cachedCharacters) {
+//             console.log('Using cached character data.');
+//             useCharacterStore.getState().setCharacters(cachedCharacters);
+//             return cachedCharacters;
+//         }
+//     }
 
-    console.log('Fetching characters from Supabase.');
-    const { data, error } = await supabase
-        .from('characters')
-        .select(CHARACTER_DATA);
+//     console.log('Fetching characters from Supabase.');
+//     const { data, error } = await supabase
+//         .from('characters')
+//         .select(CHARACTER_DATA);
 
-    if (error) {
-        throw new Error('Error fetching characters: ' + error.message);
-    }
+//     if (error) {
+//         throw new Error('Error fetching characters: ' + error.message);
+//     }
 
-    console.log("CHARACTERS PRE TRANSFORM", data);
+//     console.log("CHARACTERS PRE TRANSFORM", data);
 
-    const characters = data.map(transformSupabaseCharacter);
-    cacheCharacters(characters);
-    useCharacterStore.getState().setCharacters(characters);
+//     const characters = data.map(transformSupabaseCharacter);
+//     cacheCharacters(characters);
+//     useCharacterStore.getState().setCharacters(characters);
 
 
-    console.log("CHARACTERS", characters);
-    return characters;
-}
+//     console.log("CHARACTERS", characters);
+//     return characters;
+// }
 
-export async function getCharacterById(id) {
-    const state = useCharacterStore.getState();
-    let cachedCharacter = state.characters.find((char) => char.character_id === id);
+// export async function getCharacterById(id) {
+//     const state = useCharacterStore.getState();
+//     let cachedCharacter = state.characters.find((char) => char.character_id === id);
 
-    // If not found in state, try to rehydrate state from localStorage
-    if (!cachedCharacter) {
-        const cachedCharacters = getCachedCharacters();
-        if (cachedCharacters) {
-            console.log('Rehydrating state from localStorage.');
-            useCharacterStore.getState().setCharacters(cachedCharacters);
-            cachedCharacter = cachedCharacters.find((char) => char.character_id === id);
-            if (cachedCharacter) {
-                console.log('Fetching character from rehydrated state:', cachedCharacter);
-                return cachedCharacter;
-            }
-        }
-    }
+//     // If not found in state, try to rehydrate state from localStorage
+//     if (!cachedCharacter) {
+//         const cachedCharacters = getCachedCharacters();
+//         if (cachedCharacters) {
+//             console.log('Rehydrating state from localStorage.');
+//             useCharacterStore.getState().setCharacters(cachedCharacters);
+//             cachedCharacter = cachedCharacters.find((char) => char.character_id === id);
+//             if (cachedCharacter) {
+//                 console.log('Fetching character from rehydrated state:', cachedCharacter);
+//                 return cachedCharacter;
+//             }
+//         }
+//     }
 
-    // Fetch from Supabase if not found in state or cache
-    console.log('Fetching character from Supabase:', id);
-    const { data, error } = await supabase
-        .from('characters')
-        .select(CHARACTER_DATA)
-        .eq('character_id', id)
-        .single();
+//     // Fetch from Supabase if not found in state or cache
+//     console.log('Fetching character from Supabase:', id);
+//     const { data, error } = await supabase
+//         .from('characters')
+//         .select(CHARACTER_DATA)
+//         .eq('character_id', id)
+//         .single();
 
-    if (error) {
-        throw new Error('Error fetching character: ' + error.message);
-    }
+//     if (error) {
+//         throw new Error('Error fetching character: ' + error.message);
+//     }
 
-    const character = transformSupabaseCharacter(data);
-    state.updateCharacter(character);
-    return character;
-}
+//     const character = transformSupabaseCharacter(data);
+//     state.updateCharacter(character);
+//     return character;
+// }
 
 const exampleCharacter = new Character({
     //character_id: "10",
@@ -196,6 +240,11 @@ const exampleCharacter = new Character({
   export async function addTestCharacter() {
     const { characterData, characterAbilities } = transformCharacterToSupabase(exampleCharacter);
 
+    // Remove character_id from the data object before inserting
+    delete characterData.character_id;
+
+    console.log('Transformed character data for Supabase:', characterData);
+
     // Insert the main character data
     const { data: characterDataResponse, error: characterError } = await supabase
         .from('characters')
@@ -229,5 +278,4 @@ const exampleCharacter = new Character({
         console.log('Character abilities added successfully:', abilitiesDataResponse);
     }
 }
-
-addTestCharacter();
+//addTestCharacter();

@@ -10,7 +10,7 @@ export class Character {
   class!: { index: string; name: string };
   subclass?: { index: string; name: string };
   background!: { index: string; name: string };
-  alignment?: { index: string; name: string; acronym: string };
+  alignment?: { index: string; name: string };
 
   abilityScores!: {
     strength: { name: string; score: number; baseModifier: number; modifier: number; saving_throw_proficiency: boolean };
