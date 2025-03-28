@@ -11,7 +11,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const links = [
     { name: "Party Overview", path: "/parties/35a5a73c-d1ce-4230-8fa7-03413684765b", icon: "/icons/sword.svg" },
     { name: "Combat", path: "/combat", icon: "/icons/shield.svg" },
-    { name: "Characters", path: "/characters", icon: "/icons/helmet.svg" },
+    //{ name: "Characters", path: "/characters", icon: "/icons/helmet.svg" },
+    { name: "New Character", path: "/characters/new", icon: "/icons/helmet.svg" },
     { name: "Wiki", path: "/wiki", icon: "/icons/book.svg" },
     { name: "Character Customization", path: "/avatar", icon: "/icons/magic.svg" }
   ];

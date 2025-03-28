@@ -94,7 +94,7 @@ export default function CharacterPage() {
         <p>Level: {character.level}</p>
         <p>XP: {character.xp}</p>
         <p>Alignment: {character.alignment.name}</p>
-        <p>Player: {character.playerName}</p>
+        <p>Player: {character.player_name}</p>
       </div>
 
       <h2 className="text-2xl font-semibold mt-4">Abilities</h2>
