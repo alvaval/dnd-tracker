@@ -1,18 +1,17 @@
 import { Character } from "@/types/Character";
+import { abilityMappings, classMappings, raceMappings, subclassMappings, subraceMappings, alignmentMappings, backgroundMappings } from "@/utils/indexNameMappings";
 
 /**
  * Transforms a character object from database into a Character object.
  */
 export function transformSupabaseCharacter(char: any): Character {
 
-    const abilityMappings: Record<string, string> = {
-        strength: "Strength",
-        dexterity: "Dexterity",
-        constitution: "Constitution",
-        intelligence: "Intelligence",
-        wisdom: "Wisdom",
-        charisma: "Charisma",
-    };
+    const raceName = raceMappings[char.race] || '';
+    const subraceName = subraceMappings[char.subrace] || '';
+    const className = classMappings[char.class] || '';
+    const subclassName = subclassMappings[char.subclass] || '';
+    const alignmentName = alignmentMappings[char.alignment] || '';
+    const backgroundName = backgroundMappings[char.background] || '';
 
     const abilityScores = Object.entries(abilityMappings).reduce((acc, [key, name]) => {
         acc[key] = {
@@ -100,12 +99,13 @@ export function transformSupabaseCharacter(char: any): Character {
         name: char.name,
         level: char.level,
         xp: char.xp,
-        race: char.races ? { index: char.races.index, name: char.races.name } : null,
-        subrace: char.subraces ? { index: char.subraces.index, name: char.subraces.name } : null,
-        class: char.classes ? { index: char.classes.index, name: char.classes.name } : null,
-        subclass: char.subclasses ? { index: char.subclasses.index, name: char.subclasses.name } : null,
-        background: char.backgrounds ? { index: char.backgrounds.index, name: char.backgrounds.name } : null,
-        alignment: char.alignments ? { index: char.alignments.index, name: char.alignments.name, acronym: char.alignments.acronym } : null,
+        party_id: char.party,
+        race: { index: char.race, name: raceName },
+        subrace: char.subrace ? { index: char.subrace, name: subraceName } : null,
+        class: { index: char.class, name: className },
+        subclass: char.subclass ? { index: char.subclass, name: subclassName } : null,
+        background: { index: char.background, name: backgroundName },
+        alignment: char.alignment ? { index: char.alignment, name: alignmentName } : null,
         abilityScores,
         skills,
 
@@ -146,4 +146,56 @@ export function transformSupabaseCharacter(char: any): Character {
         ideals: char.ideals,
         bonds: char.bonds,
     });
+}
+
+
+/**
+ * Transforms a Character object into a format suitable for Supabase insertion.
+ */
+export function transformCharacterToSupabase(char: Character): any {
+    const abilityScores = Object.entries(abilityMappings).map(([key, name]) => {
+        return {
+            index: key,
+            name: name,
+            value: char.abilityScores[key]?.score || 0,
+            modifier: char.abilityScores[key]?.modifier || 0,
+            saving_throw_proficiency: char.abilityScores[key]?.saving_throw_proficiency || false,
+        };
+    });
+
+    const characterData = {
+        character_id: char.character_id || null,
+        player_name: char.player_name || '',
+        name: char.name || '',
+        level: char.level || 1,
+        xp: char.xp || 0,
+        proficiency_bonus: char.proficiency_bonus || 2,
+        armor_class: char.armor_class || 10,
+        speed: char.speed || 30,
+        hp_max: char.hp?.max || 0,
+        hp_current: char.hp?.current || 0,
+        hp_temp: char.hp?.temp || 0,
+        inspiration: char.inspiration || 0,
+        appearance: char.appearance || '',
+        backstory: char.backstory || '',
+        personality: char.personality || '',
+        ideals: char.ideals || '',
+        bonds: char.bonds || '',
+        race: char.race?.index || '',
+        subrace: char.subrace?.index || null,
+        class: char.class?.index || '',
+        subclass: char.subclass?.index || null,
+        background: char.background?.index || '',
+        alignment: char.alignment?.index || '',
+    };
+
+    const characterAbilities = abilityScores.map((ability) => ({
+        character_id: char.character_id || '',
+        value: ability.value,
+        modifier: ability.modifier,
+        saving_throw_proficiency: ability.saving_throw_proficiency,
+        ability: ability.index,
+    }));
+
+    return { characterData, characterAbilities };
 }

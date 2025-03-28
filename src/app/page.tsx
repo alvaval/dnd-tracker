@@ -1,9 +1,6 @@
-"use client";
-import React from "react";
-import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 
-const Home = dynamic(() => import("../components/PartyOverview"), { ssr: false });
-
-export default function Page() {
-  return <Home />;
+export default function HomePage() {
+  redirect("/party/35a5a73c-d1ce-4230-8fa7-03413684765b");  // Hard-coded for testing
+  return null;
 }

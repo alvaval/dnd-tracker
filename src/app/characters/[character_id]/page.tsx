@@ -1,21 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Character } from "@/types/Character";
 import Tooltip from "@/components/Tooltip";
+import { getCharacterById } from "@/services/characterService";
 import { getSpellInfo as fetchSpellInfo } from "@/utils/api";
 
-interface CharacterCardProps {
-  character: Character;
-  onBack: () => void;
-}
-
-const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
+export default function CharacterPage() {
   const router = useRouter();
+  const params = useParams();
+  const characterId = decodeURIComponent(params.character_id as string);
+  const [character, setCharacter] = useState<Character | null>(null);
   const [spellInfo, setSpellInfo] = useState<{ [key: string]: { name: string; desc: string } | null }>({});
 
   useEffect(() => {
+    const fetchCharacter = async () => {
+      try {
+        const data = await getCharacterById(characterId);
+        setCharacter(data);
+      } catch (error) {
+        console.error(`Error fetching character with ID ${characterId}:`, error);
+      }
+    };
+
+    fetchCharacter();
+  }, [characterId]);
+
+  useEffect(() => {
     const fetchAllSpellInfo = async () => {
-      if (character.spellcasting) {
+      if (character?.spellcasting) {
         const spells = character.spellcasting.spellsKnown;
         const spellInfoPromises = spells.map(async (spell) => {
           const info = await fetchSpellInfo(spell);
@@ -30,8 +44,14 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
       }
     };
 
-    fetchAllSpellInfo();
+    if (character) {
+      fetchAllSpellInfo();
+    }
   }, [character]);
+
+  if (!character) {
+    return <div className="p-4">Character not found.</div>;
+  }
 
   const handleRaceClick = () => {
     router.push(`/race/${encodeURIComponent(character.race.index)}`);
@@ -47,7 +67,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
 
   return (
     <div className="p-8 bg-gray-800 text-white rounded-lg shadow-md">
-      <button onClick={onBack} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 mb-4 transition">
+      <button onClick={() => router.push("/")} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 mb-4 transition">
         Back
       </button>
       <h1 className="text-4xl font-bold mb-4">{character.name}</h1>
@@ -86,25 +106,30 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character, onBack }) => {
         ))}
       </div>
 
-      <h2 className="text-2xl font-semibold mt-4">Spellcasting</h2>
-      <p>Spellcasting Class: {character.class.name}</p>
-      <p>Spell Save DC: {character.spellcasting.spellSaveDC}</p>
-      <p>Spell Attack Bonus: {character.spellcasting.spellAttackBonus}</p>
-      <p>Spells Known:</p>
-      {character.spellcasting.spellsKnown.map((spell) => (
-        <Tooltip key={spell} content={spellInfo[spell]?.desc || "Loading..."}>
-          <p className="inline-block mr-2 cursor-pointer text-blue-400 hover:underline" onClick={() => router.push(`/spell/${encodeURIComponent(spell)}`)}>
-            {spell}
-          </p>
-        </Tooltip>
-      ))}
-      {character.spellcasting.spellSlots.map((slot) => (
-        <p key={slot.level}>
-          Spell Slots (Level {slot.level}): {slot.used} / {slot.total}
-        </p>
-      ))}
+      {character.spellcasting && (
+        <>
+          <h2 className="text-2xl font-semibold mt-4">Spellcasting</h2>
+          <p>Spellcasting Class: {character.class.name}</p>
+          <p>Spell Save DC: {character.spellcasting.spellSaveDC}</p>
+          <p>Spell Attack Bonus: {character.spellcasting.spellAttackBonus}</p>
+          <p>Spells Known:</p>
+          {character.spellcasting.spellsKnown.map((spell) => (
+            <Tooltip key={spell} content={spellInfo[spell]?.desc || "Loading..."}>
+              <p
+                className="inline-block mr-2 cursor-pointer text-blue-400 hover:underline"
+                onClick={() => router.push(`/spell/${encodeURIComponent(spell)}`)}
+              >
+                {spell}
+              </p>
+            </Tooltip>
+          ))}
+          {character.spellcasting.spellSlots.map((slot) => (
+            <p key={slot.level}>
+              Spell Slots (Level {slot.level}): {slot.used} / {slot.total}
+            </p>
+          ))}
+        </>
+      )}
     </div>
   );
-};
-
-export default CharacterCard;
+}
