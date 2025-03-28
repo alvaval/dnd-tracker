@@ -23,7 +23,7 @@
 //         `
 
 export const CHARACTER_DATA = `
-          character_id, player_name, name, level, xp,
+          character_id, player_name, name, level, xp, party,
           spell_save_dc, spell_attack_bonus, hit_dice, passive_perception,
           proficiency_bonus, armor_class, speed, hp_max, hp_current, hp_temp,
           inspiration, prepared_spells_max,

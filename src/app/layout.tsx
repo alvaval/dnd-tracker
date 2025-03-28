@@ -5,12 +5,11 @@ import Link from "next/link";
 import "../styles/globals.css";
 import { usePathname } from "next/navigation";
 
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname(); // Get current route
 
   const links = [
-    { name: "Party Overview", path: "/", icon: "/icons/sword.svg" },
+    { name: "Party Overview", path: "/party/35a5a73c-d1ce-4230-8fa7-03413684765b", icon: "/icons/sword.svg" },
     { name: "Combat", path: "/combat", icon: "/icons/shield.svg" },
     { name: "Characters", path: "/characters", icon: "/icons/helmet.svg" },
     { name: "Wiki", path: "/wiki", icon: "/icons/book.svg" },
@@ -19,10 +18,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[#F9F7F1]">
+      <body className="bg-[#F9F7F1] h-screen overflow-hidden">
         
         {/* Fixed Navbar */}
-        <nav className={`${inknutAntiqua.className} fixed top-0 left-0 w-full h-[100px] py-4 z-50 flex justify-between px-10`}>
+        <nav className={`${inknutAntiqua.className} fixed top-0 left-0 w-full h-[100px] py-4 z-50 flex justify-between px-10 bg-[#F9F7F1]`}>
           <div className="flex">
             <span><img src="/sprites/mole.png" alt="Mole Logo" /></span>
             <span className="text-[30px] pt-5">D<span className={`${modernAntiqua.className} text-[25px]`}>&</span>D Campaign Tracker</span>
@@ -48,7 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </nav>
 
         {/* Page Content Wrapper */}
-        <div className="flex flex-col pt-20 h-screen overflow-hidden">
+        <div className="flex flex-col pt-[100px] h-[calc(100vh-100px)] overflow-y-auto">
           {children}
         </div>
       </body>

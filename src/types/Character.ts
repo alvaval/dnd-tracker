@@ -4,6 +4,7 @@ export class Character {
   name: string = '';
   level: number = 1;
   xp: number = 0;
+  party_id?: string;
 
   race!: { index: string; name: string };
   subrace?: { index: string; name: string };

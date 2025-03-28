@@ -11,8 +11,7 @@ export function transformSupabaseCharacter(char: any): Character {
     const className = classMappings[char.class] || '';
     const subclassName = subclassMappings[char.subclass] || '';
     const alignmentName = alignmentMappings[char.alignment] || '';
-    const backgroundName = alignmentMappings[char.alignment] || '';
-
+    const backgroundName = backgroundMappings[char.background] || '';
 
     const abilityScores = Object.entries(abilityMappings).reduce((acc, [key, name]) => {
         acc[key] = {
@@ -100,6 +99,7 @@ export function transformSupabaseCharacter(char: any): Character {
         name: char.name,
         level: char.level,
         xp: char.xp,
+        party_id: char.party,
         race: { index: char.race, name: raceName },
         subrace: char.subrace ? { index: char.subrace, name: subraceName } : null,
         class: { index: char.class, name: className },
