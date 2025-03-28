@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Character } from "@/types/Character";
-import { getPartyById } from "@/services/partyService";
+import { getPartyById, getPartyInfoById } from "@/services/partyService";
 import { geistMono, inknutAntiqua } from "@/lib/fonts";
 
 export default function PartyPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [partyName, setPartyName] = useState<string>("");
   const router = useRouter();
   const params = useParams();
   const partyId = params?.party_id;
@@ -16,10 +17,13 @@ export default function PartyPage() {
     const fetchParty = async () => {
       try {
         if (!partyId) return;
-        const data = await getPartyById(partyId);
-        setCharacters(data);
+        const partyInfo = await getPartyInfoById(partyId);
+        setPartyName(partyInfo?.name || "Unknown Party");
+        
+        const charactersData = await getPartyById(partyId);
+        setCharacters(charactersData);
       } catch (error) {
-        console.error("Error fetching party:", error);
+        console.error("Error fetching party info or characters:", error);
       }
     };
 
@@ -28,6 +32,9 @@ export default function PartyPage() {
 
   return (
     <main className="flex flex-col items-center p-8">
+      <h1 className={`${inknutAntiqua.className} text-3xl font-bold mb-6`}>
+        Party: {partyName}
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {characters.map((char) => (
           <div
