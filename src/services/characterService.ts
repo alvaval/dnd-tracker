@@ -3,7 +3,7 @@ import { Character } from '@/types/Character';
 
 export async function getCharacterById(characterId: string): Promise<Character | null> {
     try {
-        const response = await fetch(`/api/characters/${characterId}`);
+        const response = await fetch(`/api/character/${characterId}`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch character: ${response.statusText}`);
