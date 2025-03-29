@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getAllRaces } from '@/services/raceService';
 
 // Define TypeScript interfaces for character and abilities
 interface Abilities {

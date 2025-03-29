@@ -3,7 +3,7 @@ import { Character } from '@/types/Character';
 
 export async function getPartyById(partyId: string): Promise<Character[]> {
     try {
-        const response = await fetch(`/api/parties/${partyId}/characters`);
+        const response = await fetch(`/api/party/${partyId}/characters`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch party characters: ${response.statusText}`);
@@ -25,7 +25,7 @@ export async function getPartyById(partyId: string): Promise<Character[]> {
 
 export async function getPartyInfoById(partyId: string): Promise<any> {
     try {
-        const response = await fetch(`/api/parties/${partyId}`);
+        const response = await fetch(`/api/party/${partyId}`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch party info: ${response.statusText}`);
