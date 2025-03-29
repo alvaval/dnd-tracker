@@ -90,8 +90,8 @@ export function transformSupabaseCharacter(char: any): Character {
     //     prepared: spell.prepared
     // })) : [];
     
-    const spellsKnown = char.character_spells ? char.character_spells.map(spell => spell.spells.index) : [];    // Store only the spell index for now
-    const spellsPrepared = char.character_spells ? char.character_spells.filter(spell => spell.prepared).map(spell => spell.spells.index) : []; // Store only the spell index for now
+    const spellsKnown = char.character_spells ? char.character_spells.map(spell => spell.spell.index) : [];    // Store only the spell index for now
+    const spellsPrepared = char.character_spells ? char.character_spells.filter(spell => spell.prepared).map(spell => spell.spell.index) : []; // Store only the spell index for now
     
     return new Character({
         character_id: char.character_id,

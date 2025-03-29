@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
         // Insert character data without providing character_id
         const { data: characterDataResponse, error: characterError } = await supabase
-            .from('characters')
+            .from('character')
             .insert([body])
             .select();
 

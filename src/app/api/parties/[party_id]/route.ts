@@ -11,7 +11,7 @@ export async function GET(request: Request) {
         }
 
         const { data, error } = await supabase
-            .from('parties')
+            .from('party')
             .select('*')
             .eq('party_id', party_id)
             .single();

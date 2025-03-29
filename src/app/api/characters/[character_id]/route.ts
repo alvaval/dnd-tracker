@@ -12,7 +12,7 @@ export async function GET(request: Request, { params }: { params: { character_id
 
         // Fetch the character from Supabase using the character_id
         const { data, error } = await supabase
-            .from('characters')
+            .from('character')
             .select(CHARACTER_DATA)
             .eq('character_id', character_id)
             .single(); // Since we expect only one character with a given ID

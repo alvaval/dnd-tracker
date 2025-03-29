@@ -12,7 +12,7 @@ export async function GET(request: Request) {
         }
 
         const { data, error } = await supabase
-            .from('characters')
+            .from('character')
             .select(CHARACTER_DATA)
             .eq('party', party_id);
 
